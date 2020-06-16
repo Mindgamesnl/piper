@@ -8,3 +8,5 @@ Example workflow for a generic boring NodeJS web app
  - You edit one of the files (lets say `index.js`) in your favorite IDE
  - Piper notices the file change and replaces the one on the server
  - Piper restarts the nodejs service again and reports errors/stdout to your machine so you can see if it worked
+ 
+ One of the main goals is to make Piper completely cross platform (so being able to use a Mac editor on a Linux host)
