@@ -14,9 +14,9 @@ type Config struct {
 var LoadedInstance Config;
 
 func LoadConfiguration() Config {
-	f, err := os.Open("client.yml")
+	f, err := os.Open("piper-client.yml")
 	if err != nil {
-		logrus.Error("Could not find client.yml")
+		logrus.Error("Could not find piper-client.yml")
 		os.Exit(1)
 	}
 	defer f.Close()
