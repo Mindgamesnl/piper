@@ -1,0 +1,10 @@
+# Folders that will be ignored
+ignored-directories:
+  - .idea
+  - .git
+
+# File extensions that will be synced
+watched-extensions:
+  - go
+  - txt
+  - js
