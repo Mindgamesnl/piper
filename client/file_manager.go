@@ -2,6 +2,7 @@ package client
 
 import (
 	"github.com/radovskyb/watcher"
+	"strconv"
 )
 
 var ChangedFiles []ChangedFile
@@ -29,6 +30,7 @@ func AddChangedFile(name string, path string, operation watcher.Op) {
 	}
 
 	ChangedFiles = append(ChangedFiles, cf)
+	
 	reRender()
 }
 
@@ -49,4 +51,10 @@ func reRender()  {
 
 		PrintFiles(DebugColor + "[~] " + file.Name)
 	}
+}
+
+func PushChanges()  {
+	Log("Pushing " + strconv.Itoa(len(ChangedFiles)) + " file updates...")
+	ChangedFiles = []ChangedFile{}
+	reRender()
 }

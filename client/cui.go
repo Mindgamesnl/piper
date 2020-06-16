@@ -65,6 +65,13 @@ func SetupCui() {
 
 	g.SetManagerFunc(layout)
 
+	if err := g.SetKeybinding("", gocui.KeyEnter, gocui.ModNone, func(gui *gocui.Gui, view *gocui.View) error {
+		PushChanges()
+		return nil
+	}); err != nil {
+		log.Panicln(err)
+	}
+
 	if err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
 		log.Panicln(err)
 	}
