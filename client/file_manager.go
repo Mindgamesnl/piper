@@ -29,8 +29,25 @@ func AddChangedFile(name string, path string, operation watcher.Op) {
 		Operation: operation,
 	}
 
-	ChangedFiles = append(ChangedFiles, cf)
-	
+	cancel := false
+
+	// check if a similar one already exists, dont write to just delete it later
+	for i := range ChangedFiles {
+		file := ChangedFiles[i]
+
+		if file.Path == path && file.Name == name && file.Operation != watcher.Remove && operation == watcher.Remove {
+			cancel = true
+			ChangedFiles = remove(ChangedFiles, i)
+			Log("Ignoring file " + name + " since it has been created and delete in the same sync")
+		} else if file.Path == path && file.Name == name {
+			cancel = true
+		}
+	}
+
+	if !cancel {
+		ChangedFiles = append(ChangedFiles, cf)
+	}
+
 	reRender()
 }
 
@@ -57,4 +74,9 @@ func PushChanges()  {
 	Log("Pushing " + strconv.Itoa(len(ChangedFiles)) + " file updates...")
 	ChangedFiles = []ChangedFile{}
 	reRender()
+}
+
+func remove(s []ChangedFile, i int) []ChangedFile {
+	s[len(s)-1], s[i] = s[i], s[len(s)-1]
+	return s[:len(s)-1]
 }
