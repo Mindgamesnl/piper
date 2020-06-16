@@ -56,7 +56,7 @@ func quit(g *gocui.Gui, v *gocui.View) error {
 	return gocui.ErrQuit
 }
 
-func SetupCui() {
+func SetupCui(callback func()) {
 	g, err := gocui.NewGui(gocui.OutputNormal)
 	if err != nil {
 		log.Panicln(err)
@@ -64,6 +64,7 @@ func SetupCui() {
 	defer g.Close()
 
 	g.SetManagerFunc(layout)
+	go callback()
 
 	if err := g.SetKeybinding("", gocui.KeyEnter, gocui.ModNone, func(gui *gocui.Gui, view *gocui.View) error {
 		PushChanges()

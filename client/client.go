@@ -1,7 +1,9 @@
 package client
 
 func StartClient()  {
-	go SetupCui()
-	LoadConfiguration()
-	StartFileWatcher()
+	SetupCui(func() {
+		LoadConfiguration()
+		InitManager()
+		StartFileWatcher()
+	})
 }

@@ -9,6 +9,8 @@ import (
 type Config struct {
 	IgnoredDirectories []string `yaml:"ignored-directories"`
 	WatchedExtensions  []string `yaml:"watched-extensions"`
+	AutoSyncEnabled  bool `yaml:"auto-sync"`
+	AutoSyncTimeout  int `yaml:"auto-sync-timeout"`
 }
 
 var LoadedInstance Config;

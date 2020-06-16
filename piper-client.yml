@@ -8,3 +8,8 @@ watched-extensions:
   - go
   - txt
   - js
+
+# If you want it to synchronize automatically, timeout is the interval where files will be uploaded (if changed) in seconds
+# You can also chose to only do this manually, then set it to false and just use the ENTER key in the CUI
+auto-sync: true
+auto-sync-timeout: 10

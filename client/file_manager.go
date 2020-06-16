@@ -3,9 +3,13 @@ package client
 import (
 	"github.com/radovskyb/watcher"
 	"strconv"
+	"time"
 )
 
-var ChangedFiles []ChangedFile
+var (
+	ChangedFiles []ChangedFile
+	IsSyncing = false
+)
 
 const (
 	InfoColor    = "\033[1;34m"
@@ -14,7 +18,6 @@ const (
 	ErrorColor   = "\033[1;31m"
 	DebugColor   = "\033[0;36m"
 )
-
 
 type ChangedFile struct {
 	Name string
@@ -70,10 +73,38 @@ func reRender()  {
 	}
 }
 
+func InitManager()  {
+	if !LoadedInstance.AutoSyncEnabled {
+		Log(ErrorColor + "Auto reloading is disabled. Hit <ENTER> to synchronize changed files.")
+		return
+	}
+
+	Log(DebugColor + "Auto reloading is enabled. Hit <ENTER> to synchronize changed files or wait for the " + strconv.Itoa(LoadedInstance.AutoSyncTimeout) + " second interval")
+	ticker := time.NewTicker(time.Duration(LoadedInstance.AutoSyncTimeout) * time.Second)
+	quit := make(chan struct{})
+	go func() {
+		for {
+			select {
+			case <- ticker.C:
+				PushChanges()
+			case <- quit:
+				ticker.Stop()
+				return
+			}
+		}
+	}()
+}
+
 func PushChanges()  {
-	Log("Pushing " + strconv.Itoa(len(ChangedFiles)) + " file updates...")
+	if IsSyncing {
+		Log(ErrorColor + "Cancelled sync because another task is still running")
+		return
+	}
+	IsSyncing = true
+	Log(NoticeColor + "Pushing " + strconv.Itoa(len(ChangedFiles)) + " file updates...")
 	ChangedFiles = []ChangedFile{}
 	reRender()
+	IsSyncing = false
 }
 
 func remove(s []ChangedFile, i int) []ChangedFile {
