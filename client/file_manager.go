@@ -89,6 +89,7 @@ func InitManager()  {
 			select {
 			case <- ticker.C:
 				PushChanges()
+				reRender()
 			case <- quit:
 				ticker.Stop()
 				return
@@ -141,8 +142,8 @@ func PushChanges()  {
 	}
 
 	ChangedFiles = []ChangedFile{}
-	reRender()
 	IsSyncing = false
+	reRender()
 }
 
 func remove(s []ChangedFile, i int) []ChangedFile {

@@ -15,7 +15,6 @@ func HandleFileUpdate(update common.FileUpdate) error {
 		localPath := update.RelativePath
 		localPath = strings.Replace(localPath, update.Name, "", -1)
 		os.MkdirAll("." + localPath, os.ModePerm)
-		logrus.Info("Creating path " + localPath)
 
 		file, err := os.OpenFile("." + update.RelativePath, os.O_RDWR | os.O_CREATE, 0666)
 
@@ -30,17 +29,16 @@ func HandleFileUpdate(update common.FileUpdate) error {
 			return err
 		}
 
-		logrus.Info("Wrote file " + update.Name)
+		ConnectionPool.Broadcast <- "Wrote file " + update.Name
 		return nil
 	}
 
 	if update.Operation == watcher.Remove {
-		logrus.Info("Deleted file " + update.Name)
+		ConnectionPool.Broadcast <- "Deleted file " + update.Name
 		return os.Remove("." + update.RelativePath)
 		return nil
 	}
 
-	logrus.Info("Unknown action for " + update.Name)
+	ConnectionPool.Broadcast <- "Unknown action for " + update.Name
 	return nil
 }
-

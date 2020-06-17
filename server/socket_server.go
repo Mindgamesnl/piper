@@ -13,6 +13,8 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
+var ConnectionPool = NewPool()
+
 func StartSocket()  {
 	http.HandleFunc("/piper", func(w http.ResponseWriter, r *http.Request) {
 		if !ValidatePassword(r) {
@@ -21,7 +23,14 @@ func StartSocket()  {
 		}
 
 		conn, _ := upgrader.Upgrade(w, r, nil) // error ignored for sake of simplicity
-		conn.WriteMessage(1, []byte("Connected to output stream"))
+		ConnectionPool.Register <- conn
+		conn.WriteMessage(1, []byte("Welcome! Waiting for output"))
+
+		defer func() {
+			ConnectionPool.Unregister <- conn
+			conn.Close()
+		}()
+
 		for {
 			// Read message from browser
 			_, msg, err := conn.ReadMessage()
@@ -41,6 +50,8 @@ func StartSocket()  {
 	// http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 	//	http.ServeFile(w, r, "websockets.html")
 	// })
+
+	go ConnectionPool.Start()
 
 	http.ListenAndServe(":" + strconv.Itoa(LoadedInstance.Port), nil)
 }
