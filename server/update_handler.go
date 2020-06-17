@@ -29,7 +29,14 @@ func HandleFileUpdate(update common.FileUpdate) error {
 	if update.Operation == watcher.Create || update.Operation == watcher.Write {
 		localPath := update.RelativePath
 		localPath = strings.Replace(localPath, update.Name, "", -1)
-		os.MkdirAll("." + localPath, os.ModePerm)
+
+		if update.RelativePath == "" {
+			return nil
+		}
+
+		if localPath != "" {
+			os.MkdirAll("." + localPath, os.ModePerm)
+		}
 
 		file, err := os.OpenFile("." + update.RelativePath, os.O_RDWR | os.O_CREATE, 0666)
 

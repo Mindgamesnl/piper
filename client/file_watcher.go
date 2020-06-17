@@ -9,8 +9,10 @@ import (
 	"time"
 )
 
-func StartFileWatcher()  {
-	w := watcher.New()
+var W *watcher.Watcher
+
+func StartFileWatcher(callback func())  {
+	W = watcher.New()
 
 	expression := "^.*\\.("
 	for i := range LoadedInstance.WatchedExtensions {
@@ -21,12 +23,12 @@ func StartFileWatcher()  {
 	expression = trimSuffix(expression, "|")
 	expression += ")$"
 	r := regexp.MustCompile(expression)
-	w.AddFilterHook(watcher.RegexFilterHook(r, false))
+	W.AddFilterHook(watcher.RegexFilterHook(r, false))
 
 	go func() {
 		for {
 			select {
-			case event := <-w.Event:
+			case event := <-W.Event:
 				path, _ := os.Getwd()
 				if event.Path == path && event.FileInfo.Name() == "piper" {
 
@@ -49,9 +51,9 @@ func StartFileWatcher()  {
 						AddChangedFile(event.FileInfo.Name(), localPath, event.Op)
 					}
 				}
-			case err := <-w.Error:
+			case err := <-W.Error:
 				log.Fatalln(err)
-			case <-w.Closed:
+			case <-W.Closed:
 				return
 			}
 		}
@@ -60,11 +62,11 @@ func StartFileWatcher()  {
 	path, _ := os.Getwd()
 	path += "/"
 
-	if err := w.Add(path); err != nil {
+	if err := W.Add(path); err != nil {
 		log.Fatalln(err)
 	}
 
-	if err := w.AddRecursive("."); err != nil {
+	if err := W.AddRecursive("."); err != nil {
 		log.Fatalln(err)
 	}
 
@@ -73,11 +75,13 @@ func StartFileWatcher()  {
 		path, _ := os.Getwd()
 		path += "/"
 		Log("Ignoring directory: " + path + dir)
-		w.RemoveRecursive(path + dir)
+		W.RemoveRecursive(path + dir)
 	}
 
+	callback()
+
 	// Start the watching process - it'll check for changes every 100ms.
-	if err := w.Start(time.Millisecond * 100); err != nil {
+	if err := W.Start(time.Millisecond * 100); err != nil {
 		log.Fatalln(err)
 	}
 }
