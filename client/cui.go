@@ -84,14 +84,14 @@ func SetupCui(callback func()) {
 
 func Log(text string)  {
 	Gui.Update(func(gui *gocui.Gui) error {
-		fmt.Fprintln(LogView, text)
+		fmt.Fprintln(LogView, text + "\033[0m")
 		return nil
 	})
 }
 
 func PrintFiles(text string)  {
 	Gui.Update(func(gui *gocui.Gui) error {
-		fmt.Fprintln(FilesView, text)
+		fmt.Fprintln(FilesView, text + "\033[0m")
 		return nil
 	})
 }

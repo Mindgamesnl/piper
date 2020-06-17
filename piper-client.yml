@@ -1,3 +1,8 @@
+# Server details for the host to use
+server: localhost
+port: 4723
+password: nice
+
 # Folders that will be ignored
 ignored-directories:
   - .idea
@@ -8,8 +13,11 @@ watched-extensions:
   - go
   - txt
   - js
+  - yml
+  - md
+  - sh
 
 # If you want it to synchronize automatically, timeout is the interval where files will be uploaded (if changed) in seconds
 # You can also chose to only do this manually, then set it to false and just use the ENTER key in the CUI
-auto-sync: true
+auto-sync: false
 auto-sync-timeout: 10

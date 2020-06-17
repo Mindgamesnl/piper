@@ -3,7 +3,9 @@ package client
 func StartClient()  {
 	SetupCui(func() {
 		LoadConfiguration()
-		InitManager()
-		StartFileWatcher()
+		ConnectSocket(func() {
+			InitManager()
+			StartFileWatcher()
+		})
 	})
 }

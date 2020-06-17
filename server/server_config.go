@@ -1,4 +1,4 @@
-package client
+package server
 
 import (
 	"github.com/sirupsen/logrus"
@@ -7,16 +7,11 @@ import (
 )
 
 type Config struct {
-	IgnoredDirectories []string `yaml:"ignored-directories"`
-	WatchedExtensions  []string `yaml:"watched-extensions"`
-	AutoSyncEnabled    bool     `yaml:"auto-sync"`
-	AutoSyncTimeout    int      `yaml:"auto-sync-timeout"`
-	ServerHost         string   `yaml:"server"`
-	Port               int      `yaml:"port"`
-	Password           string   `yaml:"password"`
+	Port  int `yaml:"port"`
+	Password  string `yaml:"password"`
 }
 
-var LoadedInstance Config
+var LoadedInstance Config;
 
 func LoadConfiguration() Config {
 	if len(os.Args) < 3 {
