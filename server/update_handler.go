@@ -22,7 +22,7 @@ func HandleFileUpdate(update common.FileUpdate) error {
 	}
 
 	if update.PiperOpcode == common.StartService {
-		StartChildProcess(update.ExecutableCommands[0])
+		go StartChildProcess(update.ExecutableCommands[0])
 		return nil
 	}
 
@@ -39,7 +39,6 @@ func HandleFileUpdate(update common.FileUpdate) error {
 		}
 
 		file, err := os.OpenFile("." + update.RelativePath, os.O_RDWR | os.O_CREATE, 0666)
-
 		if err != nil {
 			return err
 		}

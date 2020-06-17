@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	github.com/fsnotify/fsnotify v1.4.9
+	github.com/go-cmd/cmd v1.2.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/jroimartin/gocui v0.4.0
 	github.com/mattn/go-runewidth v0.0.9 // indirect

@@ -64,6 +64,10 @@ func BroadcastCommandError(command string, message string)  {
 	ConnectionPool.Broadcast <- client.WarningColor + "Error while executing '" + command + "', " + message + "\033[0m"
 }
 
+func BroadcasServiceError(command string)  {
+	ConnectionPool.Broadcast <- client.WarningColor + "Error while executing '" + command + "\033[0m"
+}
+
 func BroadcastCommandOutput(message string) {
 	ConnectionPool.Broadcast <- client.NoticeColor + message + "\033[0m"
 }

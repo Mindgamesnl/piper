@@ -1,14 +1,13 @@
 package server
 
 import (
-	"bufio"
-	"github.com/sirupsen/logrus"
-	"os/exec"
+	"fmt"
+	"github.com/go-cmd/cmd"
+	"os"
 	"strings"
-	"syscall"
 )
 
-var Command *exec.Cmd
+var Command *cmd.Cmd
 
 
 func StartChildProcess(command string)  {
@@ -23,45 +22,44 @@ func StartChildProcess(command string)  {
 
 	arguments = strings.TrimSuffix(arguments, " ")
 
-	Command = exec.Command(parts[0], arguments)
-	Command.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
-
-	cmdReader, err := Command.StdoutPipe()
-	cmdErrr, _ := Command.StderrPipe()
-	if err != nil {
-		logrus.Error(err)
-		BroadcastCommandError(command, err.Error())
+	cmdOptions := cmd.Options{
+		Buffered:  false,
+		Streaming: true,
 	}
 
-	scanner := bufio.NewScanner(cmdReader)
+	Command = cmd.NewCmdOptions(cmdOptions, parts[0], arguments)
+
+	doneChan := make(chan struct{})
 	go func() {
-		for scanner.Scan() {
-			BroadcastServiceOutput("SERVICE >> " + scanner.Text())
+		defer close(doneChan)
+		// Done when both channels have been closed
+		// https://dave.cheney.net/2013/04/30/curious-channels
+		for Command.Stdout != nil || Command.Stderr != nil {
+			select {
+			case line, open := <-Command.Stdout:
+				if !open {
+					Command.Stdout = nil
+					continue
+				}
+				BroadcastServiceOutput("SERVICE >> " + line)
+			case line, open := <-Command.Stderr:
+				if !open {
+					Command.Stderr = nil
+					continue
+				}
+				fmt.Fprintln(os.Stderr, line)
+				BroadcasServiceError(line)
+			}
 		}
 	}()
-
-	errorScanner := bufio.NewScanner(cmdErrr)
-	go func() {
-		for errorScanner.Scan() {
-			BroadcastCommandOutput(errorScanner.Text())
-		}
-	}()
-
-	if err := Command.Start(); err != nil {
-		logrus.Error(err)
-		BroadcastCommandError(command, err.Error())
-	}
-
-	if err := Command.Wait(); err != nil {
-		logrus.Error(err)
-		BroadcastCommandError(command, err.Error())
-	}
+	<-Command.Start()
+	<-doneChan
 }
 
 func KillChildProcess()  {
 	if Command == nil {
 		return
 	}
-	syscall.Kill(-Command.Process.Pid, syscall.SIGKILL)
+	Command.Stop()
 	Command = nil
 }
