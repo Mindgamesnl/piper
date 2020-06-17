@@ -5,7 +5,7 @@ password: nice
 
 # If you want it to synchronize automatically, timeout is the interval where files will be uploaded (if changed) in seconds
 # You can also chose to only do this manually, then set it to false and just use the ENTER key in the CUI
-auto-sync: false
+auto-sync: true
 auto-sync-timeout: 5
 
 # Commands and routines. Use `[]` if you want to disable them
@@ -32,4 +32,8 @@ watched-extensions:
   - yml
   - md
   - sh
-  -
+  - php
+  - py
+  - jar
+  - java
+  - xml

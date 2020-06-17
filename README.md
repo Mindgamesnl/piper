@@ -21,7 +21,7 @@ password: nice
 
 # If you want it to synchronize automatically, timeout is the interval where files will be uploaded (if changed) in seconds
 # You can also chose to only do this manually, then set it to false and just use the ENTER key in the CUI
-auto-sync: false
+auto-sync: true
 auto-sync-timeout: 5
 
 # Commands and routines. Use `[]` if you want to disable them
@@ -33,7 +33,7 @@ post-update-commands:
 
 # The service that will be stopped before a update and resumed when all the files are in place
 # You can just empty a small echo command if you dont want a service (like python, nodejs or go) to start/stop
-service-command: "node node-express-demo/index.js"
+service-command: "/usr/local/bin/node test.js"
 
 # Folders that will be ignored
 ignored-directories:
@@ -48,6 +48,11 @@ watched-extensions:
   - yml
   - md
   - sh
+  - php
+  - py
+  - jar
+  - java
+  - xml
 ```
 To start the client, simply run `piper client ./my-config.yml` and you are ready to go. If you wish to set up a new environment and push all your code at once by adding the `--upload-all` flag (piper will look for all applicable files, upload them and then close again which is super useful to push to production)
 
