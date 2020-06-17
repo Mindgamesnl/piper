@@ -100,8 +100,13 @@ func PushChanges()  {
 		Log(ErrorColor + "Cancelled sync because another task is still running")
 		return
 	}
+	changeCount := len(ChangedFiles)
+	if changeCount == 0 {
+		return
+	}
+
 	IsSyncing = true
-	Log(NoticeColor + "Pushing " + strconv.Itoa(len(ChangedFiles)) + " file updates...")
+	Log(NoticeColor + "Pushing " + strconv.Itoa(changeCount) + " file updates...")
 	ChangedFiles = []ChangedFile{}
 	reRender()
 	IsSyncing = false
