@@ -89,6 +89,13 @@ func Log(text string)  {
 	})
 }
 
+func PrintRemote(text string)  {
+	Gui.Update(func(gui *gocui.Gui) error {
+		fmt.Fprintln(OutputView, text + "\033[0m")
+		return nil
+	})
+}
+
 func PrintFiles(text string)  {
 	Gui.Update(func(gui *gocui.Gui) error {
 		fmt.Fprintln(FilesView, text + "\033[0m")

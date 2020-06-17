@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+var Connection *websocket.Conn
+
 func ConnectSocket(callback func())  {
 	port := LoadedInstance.Port
 	host := LoadedInstance.ServerHost
@@ -23,6 +25,7 @@ func ConnectSocket(callback func())  {
 	u := url.URL{Scheme: "ws", Host: hostAndPort, Path: "/piper", RawQuery: "password=" + password}
 
 	c, resp, err := websocket.DefaultDialer.Dial(u.String(), nil)
+	Connection = c
 	if err == websocket.ErrBadHandshake {
 		log.Printf("handshake failed with status %d", resp.StatusCode)
 	}
@@ -30,21 +33,23 @@ func ConnectSocket(callback func())  {
 		Log(ErrorColor + "Connection refused. Is the hostname and password correct, or is the server down?")
 		return
 	}
-	defer c.Close()
+	defer Connection.Close()
 
 	done := make(chan struct{})
 
 	go func() {
 		defer close(done)
 		for {
-			_, message, err := c.ReadMessage()
+			_, message, err := Connection.ReadMessage()
 			if err != nil {
 				log.Println("read:", err)
 				return
 			}
-			log.Printf("recv: %s", message)
+			PrintRemote(string(message))
 		}
 	}()
+
+	go callback()
 
 	ticker := time.NewTicker(time.Second)
 	defer ticker.Stop()
@@ -53,20 +58,13 @@ func ConnectSocket(callback func())  {
 		select {
 		case <-done:
 			return
-		case t := <-ticker.C:
-			err := c.WriteMessage(websocket.TextMessage, []byte(t.String()))
-			if err != nil {
-				log.Println("write:", err)
-				return
-			}
 		case <-interrupt:
 			log.Println("interrupt")
 
 			// Cleanly close the connection by sending a close message and then
 			// waiting (with timeout) for the server to close the connection.
-			err := c.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+			err := Connection.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 			if err != nil {
-				log.Println("write close:", err)
 				return
 			}
 			select {
@@ -76,6 +74,8 @@ func ConnectSocket(callback func())  {
 			return
 		}
 	}
+}
 
-	callback()
+func WriteSocket(whatToWrite string)  {
+	Connection.WriteMessage(websocket.TextMessage, []byte(whatToWrite))
 }

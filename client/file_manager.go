@@ -1,7 +1,9 @@
 package client
 
 import (
+	"github.com/Mindgamesnl/piper/common"
 	"github.com/radovskyb/watcher"
+	"io/ioutil"
 	"strconv"
 	"time"
 )
@@ -106,7 +108,38 @@ func PushChanges()  {
 	}
 
 	IsSyncing = true
-	Log(NoticeColor + "Pushing " + strconv.Itoa(changeCount) + " file updates...")
+
+	handled := 1
+	for i := range ChangedFiles {
+		file := ChangedFiles[i]
+		Log("Handling file " + strconv.Itoa(handled) + " of " + strconv.Itoa(len(ChangedFiles)))
+		if file.Operation == watcher.Write || file.Operation == watcher.Create {
+			// get contents
+			content, _ := ioutil.ReadFile("." + file.Path)
+
+			var update = common.FileUpdate{
+				Name:         file.Name,
+				RelativePath: file.Path,
+				Operation:    file.Operation,
+				Content:      content,
+			}
+
+			WriteSocket(update.ToJson())
+			handled++
+		}
+
+		if file.Operation == watcher.Remove {
+			var update = common.FileUpdate{
+				Name:         file.Name,
+				RelativePath: file.Path,
+				Operation:    file.Operation,
+			}
+
+			WriteSocket(update.ToJson())
+			handled++
+		}
+	}
+
 	ChangedFiles = []ChangedFile{}
 	reRender()
 	IsSyncing = false

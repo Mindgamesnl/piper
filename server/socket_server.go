@@ -1,7 +1,7 @@
 package server
 
 import (
-	"fmt"
+	"github.com/Mindgamesnl/piper/common"
 	"github.com/gorilla/websocket"
 	"github.com/sirupsen/logrus"
 	"net/http"
@@ -21,19 +21,19 @@ func StartSocket()  {
 		}
 
 		conn, _ := upgrader.Upgrade(w, r, nil) // error ignored for sake of simplicity
+		conn.WriteMessage(1, []byte("Connected to output stream"))
 		for {
 			// Read message from browser
-			msgType, msg, err := conn.ReadMessage()
+			_, msg, err := conn.ReadMessage()
 			if err != nil {
 				return
 			}
 
 			// Print the message to the console
-			fmt.Printf("%s sent: %s\n", conn.RemoteAddr(), string(msg))
-
-			// Write message back to browser
-			if err = conn.WriteMessage(msgType, msg); err != nil {
-				return
+			err = HandleFileUpdate(common.FromJson(msg))
+			if err != nil {
+				logrus.Error(err)
+				conn.WriteMessage(1, []byte("Error while writing file: " + err.Error()))
 			}
 		}
 	})

@@ -31,7 +31,23 @@ func StartFileWatcher()  {
 				if event.Path == path && event.FileInfo.Name() == "piper" {
 
 				} else {
-					AddChangedFile(event.FileInfo.Name(), event.Path, event.Op)
+
+					if event.Op == watcher.Move {
+						// fake move into two seperate events
+						// deletion
+						localPath := event.OldPath
+						localPath = strings.Replace(localPath, path, "", -1)
+						AddChangedFile(event.FileInfo.Name(), localPath, watcher.Remove)
+
+						// create new file
+						localPath = event.Path
+						localPath = strings.Replace(localPath, path, "", -1)
+						AddChangedFile(event.FileInfo.Name(), localPath, watcher.Create)
+					} else {
+						localPath := event.Path
+						localPath = strings.Replace(localPath, path, "", -1)
+						AddChangedFile(event.FileInfo.Name(), localPath, event.Op)
+					}
 				}
 			case err := <-w.Error:
 				log.Fatalln(err)
