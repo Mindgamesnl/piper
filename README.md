@@ -4,6 +4,8 @@ It watches your files for changes and uploads them to your server and automatica
 
 You can also disable automatic uploads and only push files manually (by hitting enter when Piper detected your changes) or use it to maintain/setup production environments based on a local setup (you don't have to constantly reload code, you can also upload your entire package, restart the service and call it a day)
 
+![screenshot](https://i.imgur.com/P76mffQ.png)
+
 # Piper client
 The Piper client is what you run on your local machine. Place the Piper binary in the root directory of your project and create a configuration YAML file. It should look like this
 ```yaml
@@ -52,3 +54,4 @@ port: 4723
 password: nice
 ```
 and can then start the server using `piper server ./my-config.yml`
+
