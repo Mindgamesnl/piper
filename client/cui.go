@@ -82,23 +82,34 @@ func SetupCui(callback func()) {
 	}
 }
 
+
+// weird error handling ahead! because we cant do anything about it
 func Log(text string)  {
 	Gui.Update(func(gui *gocui.Gui) error {
-		fmt.Fprintln(LogView, text + "\033[0m")
+		_, err := fmt.Fprintln(LogView, text + "\033[0m")
+		if err != nil {
+			// nothing
+		}
 		return nil
 	})
 }
 
 func PrintRemote(text string)  {
 	Gui.Update(func(gui *gocui.Gui) error {
-		fmt.Fprintln(OutputView, text + "\033[0m")
+		_, err := fmt.Fprintln(OutputView, text + "\033[0m")
+		if err != nil {
+			// nothing
+		}
 		return nil
 	})
 }
 
 func PrintFiles(text string)  {
 	Gui.Update(func(gui *gocui.Gui) error {
-		fmt.Fprintln(FilesView, text + "\033[0m")
+		_, err := fmt.Fprintln(FilesView, text + "\033[0m")
+		if err != nil {
+			// nothing
+		}
 		return nil
 	})
 }

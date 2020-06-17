@@ -10,7 +10,7 @@ import (
 
 var (
 	ChangedFiles []ChangedFile
-	IsSyncing = false
+	IsSyncing    = false
 )
 
 const (
@@ -22,15 +22,15 @@ const (
 )
 
 type ChangedFile struct {
-	Name string
-	Path string
+	Name      string
+	Path      string
 	Operation watcher.Op
 }
 
 func AddChangedFile(name string, path string, operation watcher.Op) {
 	cf := ChangedFile{
-		Name: name,
-		Path: path,
+		Name:      name,
+		Path:      path,
 		Operation: operation,
 	}
 
@@ -56,7 +56,7 @@ func AddChangedFile(name string, path string, operation watcher.Op) {
 	reRender()
 }
 
-func reRender()  {
+func reRender() {
 	FilesView.Clear()
 	for i := range ChangedFiles {
 		file := ChangedFiles[i]
@@ -75,7 +75,7 @@ func reRender()  {
 	}
 }
 
-func InitManager()  {
+func InitManager() {
 	if !LoadedInstance.AutoSyncEnabled {
 		Log(ErrorColor + "Auto reloading is disabled. Hit <ENTER> to synchronize changed files.")
 		return
@@ -87,10 +87,10 @@ func InitManager()  {
 	go func() {
 		for {
 			select {
-			case <- ticker.C:
+			case <-ticker.C:
 				PushChanges()
 				reRender()
-			case <- quit:
+			case <-quit:
 				ticker.Stop()
 				return
 			}
@@ -98,7 +98,7 @@ func InitManager()  {
 	}()
 }
 
-func PushChanges()  {
+func PushChanges() {
 	if IsSyncing {
 		Log(ErrorColor + "Cancelled sync because another task is still running")
 		return
@@ -112,10 +112,15 @@ func PushChanges()  {
 
 	// pre commands
 	var preCommands = common.FileUpdate{
-		PiperOpcode: common.ExecuteCommands,
+		PiperOpcode:        common.ExecuteCommands,
 		ExecutableCommands: LoadedInstance.PreUpdateCommands,
 	}
 	WriteSocket(preCommands.ToJson())
+
+	var killChild = common.FileUpdate{
+		PiperOpcode: common.StopService,
+	}
+	WriteSocket(killChild.ToJson())
 
 	handled := 1
 	for i := range ChangedFiles {
@@ -136,7 +141,6 @@ func PushChanges()  {
 			handled++
 		}
 
-
 		if file.Operation == watcher.Remove {
 			var update = common.FileUpdate{
 				Name:         file.Name,
@@ -150,10 +154,18 @@ func PushChanges()  {
 	}
 
 	var postCommands = common.FileUpdate{
-		PiperOpcode: common.ExecuteCommands,
+		PiperOpcode:        common.ExecuteCommands,
 		ExecutableCommands: LoadedInstance.PostUpdateCommands,
 	}
 	WriteSocket(postCommands.ToJson())
+
+	var startChild = common.FileUpdate{
+		PiperOpcode: common.StartService,
+		ExecutableCommands: []string{
+			LoadedInstance.ServiceCommand,
+		},
+	}
+	WriteSocket(startChild.ToJson())
 
 	ChangedFiles = []ChangedFile{}
 	IsSyncing = false

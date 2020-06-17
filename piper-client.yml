@@ -3,20 +3,6 @@ server: localhost
 port: 4723
 password: nice
 
-# Folders that will be ignored
-ignored-directories:
-  - .idea
-  - .git
-
-# File extensions that will be synced
-watched-extensions:
-  - go
-  - txt
-  - js
-  - yml
-  - md
-  - sh
-
 # If you want it to synchronize automatically, timeout is the interval where files will be uploaded (if changed) in seconds
 # You can also chose to only do this manually, then set it to false and just use the ENTER key in the CUI
 auto-sync: false
@@ -30,6 +16,19 @@ post-update-commands:
   - "echo STARTING SERVICE! WELCOME BACK"
 
 # The service that will be stopped before a update and resumed when all the files are in place
-# This service will also be monitored to the piper clients
-service-command:
-  - "echo I'm useless"
+# You can just empty a small echo command if you dont want a service (like python, nodejs or go) to start/stop
+service-command: "echo I'm useless"
+
+# Folders that will be ignored
+ignored-directories:
+  - .idea
+  - .git
+
+# File extensions that will be synced
+watched-extensions:
+  - go
+  - txt
+  - js
+  - yml
+  - md
+  - sh

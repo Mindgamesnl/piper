@@ -11,6 +11,7 @@ type Config struct {
 	WatchedExtensions  []string `yaml:"watched-extensions"`
 	PreUpdateCommands  []string `yaml:"pre-update-commands"`
 	PostUpdateCommands []string `yaml:"post-update-commands"`
+	ServiceCommand     string   `yaml:"service-command"`
 	AutoSyncEnabled    bool     `yaml:"auto-sync"`
 	AutoSyncTimeout    int      `yaml:"auto-sync-timeout"`
 	ServerHost         string   `yaml:"server"`

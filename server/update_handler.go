@@ -3,19 +3,26 @@ package server
 import (
 	"github.com/Mindgamesnl/piper/common"
 	"github.com/radovskyb/watcher"
-	"github.com/sirupsen/logrus"
 	"os"
 	"strings"
 )
 
 func HandleFileUpdate(update common.FileUpdate) error {
-	logrus.Info("Request to write file " + update.Name)
-
 	if update.PiperOpcode == common.ExecuteCommands {
 		for i := range update.ExecutableCommands {
 			command := update.ExecutableCommands[i]
 			ExecuteTask(command)
 		}
+		return nil
+	}
+
+	if update.PiperOpcode == common.StopService {
+		KillChildProcess()
+		return nil
+	}
+
+	if update.PiperOpcode == common.StartService {
+		StartChildProcess(update.ExecutableCommands[0])
 		return nil
 	}
 
