@@ -48,7 +48,7 @@ func StartChildProcess(command string)  {
 					continue
 				}
 				fmt.Fprintln(os.Stderr, line)
-				BroadcasServiceError(line)
+				BroadcastServiceError(line)
 			}
 		}
 	}()
