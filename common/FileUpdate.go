@@ -5,11 +5,19 @@ import (
 	"github.com/radovskyb/watcher"
 )
 
+const (
+	StartService    = 1
+	StopService     = 2
+	ExecuteCommands = 3
+)
+
 type FileUpdate struct {
-	Name string
-	RelativePath string
-	Operation watcher.Op
-	Content []byte
+	Name               string
+	RelativePath       string
+	Operation          watcher.Op
+	Content            []byte
+	ExecutableCommands []string
+	PiperOpcode        byte
 }
 
 func FromJson(json []byte) FileUpdate {

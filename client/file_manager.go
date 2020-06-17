@@ -110,6 +110,13 @@ func PushChanges()  {
 
 	IsSyncing = true
 
+	// pre commands
+	var preCommands = common.FileUpdate{
+		PiperOpcode: common.ExecuteCommands,
+		ExecutableCommands: LoadedInstance.PreUpdateCommands,
+	}
+	WriteSocket(preCommands.ToJson())
+
 	handled := 1
 	for i := range ChangedFiles {
 		file := ChangedFiles[i]
@@ -129,6 +136,7 @@ func PushChanges()  {
 			handled++
 		}
 
+
 		if file.Operation == watcher.Remove {
 			var update = common.FileUpdate{
 				Name:         file.Name,
@@ -140,6 +148,12 @@ func PushChanges()  {
 			handled++
 		}
 	}
+
+	var postCommands = common.FileUpdate{
+		PiperOpcode: common.ExecuteCommands,
+		ExecutableCommands: LoadedInstance.PostUpdateCommands,
+	}
+	WriteSocket(postCommands.ToJson())
 
 	ChangedFiles = []ChangedFile{}
 	IsSyncing = false

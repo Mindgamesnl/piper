@@ -11,6 +11,14 @@ import (
 func HandleFileUpdate(update common.FileUpdate) error {
 	logrus.Info("Request to write file " + update.Name)
 
+	if update.PiperOpcode == common.ExecuteCommands {
+		for i := range update.ExecutableCommands {
+			command := update.ExecutableCommands[i]
+			ExecuteTask(command)
+		}
+		return nil
+	}
+
 	if update.Operation == watcher.Create || update.Operation == watcher.Write {
 		localPath := update.RelativePath
 		localPath = strings.Replace(localPath, update.Name, "", -1)
@@ -29,16 +37,16 @@ func HandleFileUpdate(update common.FileUpdate) error {
 			return err
 		}
 
-		ConnectionPool.Broadcast <- "Wrote file " + update.Name
+		BroadcastMessage("Wrote file " + update.Name)
 		return nil
 	}
 
 	if update.Operation == watcher.Remove {
-		ConnectionPool.Broadcast <- "Deleted file " + update.Name
+		BroadcastMessage("Deleted file " + update.Name)
 		return os.Remove("." + update.RelativePath)
 		return nil
 	}
 
-	ConnectionPool.Broadcast <- "Unknown action for " + update.Name
+	BroadcastMessage("Unknown action for " + update.Name)
 	return nil
 }

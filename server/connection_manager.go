@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"github.com/Mindgamesnl/piper/client"
 	"github.com/gorilla/websocket"
 )
 
@@ -41,4 +42,16 @@ func (pool *Pool) Start() {
 			}
 		}
 	}
+}
+
+func BroadcastMessage(message string)  {
+	ConnectionPool.Broadcast <- client.InfoColor + "PIPER: " + message + "\033[0m"
+}
+
+func BroadcastCommandError(command string, message string)  {
+	ConnectionPool.Broadcast <- client.WarningColor + "Error while executing '" + command + "', " + message + "\033[0m"
+}
+
+func BroadcastCommandOutput(message string) {
+	ConnectionPool.Broadcast <- client.NoticeColor + message + "\033[0m"
 }
