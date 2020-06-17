@@ -4,20 +4,32 @@ import (
 	"fmt"
 	"github.com/Mindgamesnl/piper/client"
 	"github.com/gorilla/websocket"
+	"sync"
 )
 
 type Pool struct {
-	Register   chan *websocket.Conn
-	Unregister chan *websocket.Conn
-	Clients    map[*websocket.Conn]bool
+	Register   chan Player
+	Unregister chan Player
+	Clients    map[Player]bool
 	Broadcast  chan string
+}
+
+type Player struct {
+	Socket *websocket.Conn // websocket connection of the player
+	mu      sync.Mutex
+}
+
+func (p *Player) send(v []byte) error {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	return p.Socket.WriteMessage(1, v)
 }
 
 func NewPool() *Pool {
 	return &Pool{
-		Register:   make(chan *websocket.Conn),
-		Unregister: make(chan *websocket.Conn),
-		Clients:    make(map[*websocket.Conn]bool),
+		Register:   make(chan Player),
+		Unregister: make(chan Player),
+		Clients:    make(map[Player]bool),
 		Broadcast:  make(chan string),
 	}
 }
@@ -35,7 +47,7 @@ func (pool *Pool) Start() {
 			break
 		case message := <-pool.Broadcast:
 			for client, _ := range pool.Clients {
-				if err := client.WriteMessage(1, []byte(message)); err != nil {
+ 				if err := client.send([]byte(message)); err != nil {
 					fmt.Println(err)
 					return
 				}
@@ -54,4 +66,8 @@ func BroadcastCommandError(command string, message string)  {
 
 func BroadcastCommandOutput(message string) {
 	ConnectionPool.Broadcast <- client.NoticeColor + message + "\033[0m"
+}
+
+func BroadcastServiceOutput(message string) {
+	ConnectionPool.Broadcast <- client.DebugColor + message + "\033[0m"
 }

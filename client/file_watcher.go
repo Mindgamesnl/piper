@@ -81,7 +81,7 @@ func StartFileWatcher(callback func())  {
 	callback()
 
 	// Start the watching process - it'll check for changes every 100ms.
-	if err := W.Start(time.Millisecond * 100); err != nil {
+	if err := W.Start(time.Millisecond * 500); err != nil {
 		log.Fatalln(err)
 	}
 }

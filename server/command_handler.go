@@ -17,6 +17,8 @@ func ExecuteTask(command string)  {
 		arguments += parts[i] + " "
 	}
 
+	arguments = strings.TrimSuffix(arguments, " ")
+
 	cmd := exec.Command(parts[0], arguments)
 	stdin, err := cmd.StdinPipe()
 	if err != nil {

@@ -26,7 +26,7 @@ post-update-commands:
 
 # The service that will be stopped before a update and resumed when all the files are in place
 # You can just empty a small echo command if you dont want a service (like python, nodejs or go) to start/stop
-service-command: "echo I'm useless"
+service-command: "node node-express-demo/index.js"
 
 # Folders that will be ignored
 ignored-directories:

@@ -35,14 +35,14 @@ func AddChangedFile(name string, path string, operation watcher.Op) {
 	}
 
 	cancel := false
-
+	changedFiles := ChangedFiles
 	// check if a similar one already exists, dont write to just delete it later
-	for i := range ChangedFiles {
-		file := ChangedFiles[i]
+	for i := range changedFiles {
+		file := changedFiles[i]
 
 		if file.Path == path && file.Name == name && file.Operation != watcher.Remove && operation == watcher.Remove {
 			cancel = true
-			ChangedFiles = remove(ChangedFiles, i)
+			changedFiles = remove(changedFiles, i)
 			Log("Ignoring file " + name + " since it has been created and delete in the same sync")
 		} else if file.Path == path && file.Name == name {
 			cancel = true

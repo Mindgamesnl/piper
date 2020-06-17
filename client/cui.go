@@ -9,9 +9,9 @@ import (
 
 var (
 	OutputView *gocui.View
-	LogView *gocui.View
-	FilesView *gocui.View
-	Gui *gocui.Gui
+	LogView    *gocui.View
+	FilesView  *gocui.View
+	Gui        *gocui.Gui
 )
 
 func layout(g *gocui.Gui) error {
@@ -82,34 +82,33 @@ func SetupCui(callback func()) {
 	}
 }
 
-
 // weird error handling ahead! because we cant do anything about it
-func Log(text string)  {
-	Gui.Update(func(gui *gocui.Gui) error {
-		_, err := fmt.Fprintln(LogView, text + "\033[0m")
-		if err != nil {
-			// nothing
-		}
-		return nil
-	})
+func Log(text string) {
+	_, err := fmt.Fprintln(LogView, text+"\033[0m")
+	if err != nil {
+		// nothing
+	}
+	update()
 }
 
-func PrintRemote(text string)  {
-	Gui.Update(func(gui *gocui.Gui) error {
-		_, err := fmt.Fprintln(OutputView, text + "\033[0m")
-		if err != nil {
-			// nothing
-		}
-		return nil
-	})
+func PrintRemote(text string) {
+	_, err := fmt.Fprintln(OutputView, text+"\033[0m")
+	if err != nil {
+		// nothing
+	}
+	update()
 }
 
-func PrintFiles(text string)  {
+func PrintFiles(text string) {
+	_, err := fmt.Fprintln(FilesView, text+"\033[0m")
+	if err != nil {
+		// nothing
+	}
+	update()
+}
+
+func update()  {
 	Gui.Update(func(gui *gocui.Gui) error {
-		_, err := fmt.Fprintln(FilesView, text + "\033[0m")
-		if err != nil {
-			// nothing
-		}
 		return nil
 	})
 }

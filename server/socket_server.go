@@ -23,11 +23,11 @@ func StartSocket()  {
 		}
 
 		conn, _ := upgrader.Upgrade(w, r, nil) // error ignored for sake of simplicity
-		ConnectionPool.Register <- conn
+		ConnectionPool.Register <- Player{Socket: conn}
 		conn.WriteMessage(1, []byte("Welcome! Waiting for output"))
 
 		defer func() {
-			ConnectionPool.Unregister <- conn
+			ConnectionPool.Unregister <- Player{Socket: conn}
 			conn.Close()
 		}()
 
