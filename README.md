@@ -4,6 +4,11 @@ It watches your files for changes and uploads them to your server and automatica
 
 You can also disable automatic uploads and only push files manually (by hitting enter when Piper detected your changes) or use it to maintain/setup production environments based on a local setup (you don't have to constantly reload code, you can also upload your entire package, restart the service and call it a day)
 
+Cross platform with support for
+- Windows
+- MacOS
+- Linux (+arm)
+
 ![screenshot](https://i.imgur.com/P76mffQ.png)
 
 # Piper client
