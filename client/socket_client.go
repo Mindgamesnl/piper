@@ -7,12 +7,14 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"sync"
 	"time"
 )
 
 var Connection *websocket.Conn
+var mu sync.Mutex
 
-func ConnectSocket(callback func())  {
+func ConnectSocket(callback func()) {
 	port := LoadedInstance.Port
 	host := LoadedInstance.ServerHost
 	hostAndPort := host + ":" + strconv.Itoa(port)
@@ -76,6 +78,8 @@ func ConnectSocket(callback func())  {
 	}
 }
 
-func WriteSocket(whatToWrite string)  {
+func WriteSocket(whatToWrite string) {
+	mu.Lock()
+	defer mu.Unlock()
 	Connection.WriteMessage(websocket.TextMessage, []byte(whatToWrite))
 }
