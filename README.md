@@ -64,4 +64,3 @@ port: 4723
 password: nice
 ```
 and can then start the server using `piper server ./my-config.yml`
-

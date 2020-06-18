@@ -28,3 +28,4 @@ func main() {
 	logrus.Error("invalid arguments! use piper <client/server> <arguments>")
 	os.Exit(1)
 }
+

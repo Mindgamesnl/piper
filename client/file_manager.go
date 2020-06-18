@@ -59,6 +59,10 @@ func AddChangedFile(name string, path string, operation watcher.Op) {
 func reRender() {
 	FilesView.Clear()
 	for i := range ChangedFiles {
+		if i > len(ChangedFiles) {
+			Log(ErrorColor + "Canceled rendering since the file update index is no longer relevant")
+			return
+		}
 		file := ChangedFiles[i]
 
 		if file.Operation == watcher.Remove {

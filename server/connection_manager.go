@@ -21,8 +21,9 @@ type Player struct {
 
 func (p *Player) send(v []byte) error {
 	p.mu.Lock()
+	result := p.Socket.WriteMessage(1, v)
 	defer p.mu.Unlock()
-	return p.Socket.WriteMessage(1, v)
+	return result
 }
 
 func NewPool() *Pool {
