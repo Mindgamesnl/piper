@@ -1,4 +1,4 @@
-# piper
+# piper ![Go](https://github.com/Mindgamesnl/piper/workflows/Go/badge.svg)
 Piper is a service that deploys your code as you write it with a clear overview of what changed as well as its output. Useful for development where you have to run/test your code on a specific environment.
 It watches your files for changes and uploads them to your server and automatically restarts the service, so you can continue debugging/testing.
 
