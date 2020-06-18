@@ -5,6 +5,7 @@ import (
 	"github.com/jroimartin/gocui"
 	"log"
 	"os"
+	"sync"
 )
 
 var (
@@ -82,29 +83,38 @@ func SetupCui(callback func()) {
 	}
 }
 
+var logLock sync.Mutex
+var remoteLock sync.Mutex
+var filesLock sync.Mutex
 // weird error handling ahead! because we cant do anything about it
 func Log(text string) {
+	logLock.Lock()
 	_, err := fmt.Fprintln(LogView, text+"\033[0m")
 	if err != nil {
 		// nothing
 	}
 	update()
+	logLock.Unlock()
 }
 
 func PrintRemote(text string) {
+	remoteLock.Lock()
 	_, err := fmt.Fprintln(OutputView, text+"\033[0m")
 	if err != nil {
 		// nothing
 	}
 	update()
+	remoteLock.Unlock()
 }
 
 func PrintFiles(text string) {
+	filesLock.Lock()
 	_, err := fmt.Fprintln(FilesView, text+"\033[0m")
 	if err != nil {
 		// nothing
 	}
 	update()
+	filesLock.Unlock()
 }
 
 func update()  {
