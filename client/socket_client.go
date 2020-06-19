@@ -14,7 +14,7 @@ import (
 var Connection *websocket.Conn
 var mu sync.Mutex
 
-func ConnectSocket(callback func()) {
+func ConnectSocket( callback func()) {
 	port := LoadedInstance.Port
 	host := LoadedInstance.ServerHost
 	hostAndPort := host + ":" + strconv.Itoa(port)
@@ -62,9 +62,6 @@ func ConnectSocket(callback func()) {
 			return
 		case <-interrupt:
 			log.Println("interrupt")
-
-			// Cleanly close the connection by sending a close message and then
-			// waiting (with timeout) for the server to close the connection.
 			err := Connection.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 			if err != nil {
 				return
