@@ -12,22 +12,21 @@ var Command *cmd.Cmd
 
 func StartChildProcess(command string)  {
 	parts := strings.Split(command, " ")
-	var arguments = ""
+	var arguments []string
 	for i := range parts {
 		if i == 0 {
 			continue
 		}
-		arguments += parts[i] + " "
+		arguments = append(arguments, parts[i])
 	}
 
-	arguments = strings.TrimSuffix(arguments, " ")
 
 	cmdOptions := cmd.Options{
 		Buffered:  false,
 		Streaming: true,
 	}
 
-	Command = cmd.NewCmdOptions(cmdOptions, parts[0], arguments)
+	Command = cmd.NewCmdOptions(cmdOptions, parts[0], arguments...)
 
 	doneChan := make(chan struct{})
 	go func() {

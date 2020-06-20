@@ -17,5 +17,4 @@ func SyncAllAndClose()  {
 	}
 
 	PushChanges()
-	os.Exit(0)
 }

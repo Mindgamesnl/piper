@@ -9,17 +9,15 @@ import (
 func ExecuteTask(command string)  {
 	// split between commands and arguments
 	parts := strings.Split(command, " ")
-	var arguments = ""
+	var arguments []string
 	for i := range parts {
 		if i == 0 {
 			continue
 		}
-		arguments += parts[i] + " "
+		arguments = append(arguments, parts[i])
 	}
 
-	arguments = strings.TrimSuffix(arguments, " ")
-
-	cmd := exec.Command(parts[0], arguments)
+	cmd := exec.Command(parts[0], arguments...)
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		BroadcastCommandError(command, err.Error())
